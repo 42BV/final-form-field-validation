@@ -1,0 +1,112 @@
+{
+  "name": "@42.nl/final-form-field-validation",
+  "version": "0.0.1",
+  "description": "Validating final forms.",
+  "files": [
+    "lib"
+  ],
+  "main": "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/42BV/final-form-field-validation.git"
+  },
+  "keywords": [
+    "final-form",
+    "react-final-form"
+  ],
+  "author": "Gido Manders",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/42BV/final-form-field-validation/issues"
+  },
+  "homepage": "https://github.com/42BV/final-form-field-validation#readme",
+  "peerDependencies": {
+    "final-form": "^4.20.6",
+    "react-final-form": "^6.5.8"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "8.17.1",
+    "@testing-library/jest-dom": "5.16.5",
+    "@testing-library/react": "13.3.0",
+    "@types/jest": "28.1.7",
+    "@types/jsdom": "20.0.0",
+    "@types/react": "18.0.17",
+    "@types/react-dom": "18.0.6",
+    "@typescript-eslint/eslint-plugin": "5.34.0",
+    "@typescript-eslint/parser": "5.34.0",
+    "eslint": "8.22.0",
+    "eslint-config-prettier": "8.5.0",
+    "eslint-plugin-jest": "26.8.7",
+    "eslint-plugin-prettier": "4.2.1",
+    "eslint-plugin-react": "7.30.1",
+    "final-form": "4.20.7",
+    "husky": "8.0.1",
+    "jest": "28.1.3",
+    "jest-environment-jsdom": "28.1.3",
+    "jest-watch-typeahead": "2.0.0",
+    "jsdom": "20.0.0",
+    "lint-staged": "13.0.3",
+    "np": "7.6.2",
+    "prettier": "2.7.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-final-form": "6.5.9",
+    "ts-jest": "28.0.8",
+    "typescript": "4.7.4"
+  },
+  "scripts": {
+    "start": "jest --watch --coverage",
+    "clean": "rm -rf lib",
+    "test": "npm run lint && npm run test:ts && npm run test:coverage",
+    "test:ts": "tsc --version && tsc --noEmit",
+    "test:coverage": "jest test --no-cache --coverage",
+    "docs": "jekyll serve --source docs",
+    "tsc": "npm run clean && tsc --version && tsc",
+    "lint": "npm run lint:test && npm run lint:src",
+    "lint:test": "eslint \"tests/**\" --max-warnings=0",
+    "lint:src": "eslint \"src/**\" --max-warnings=0",
+    "release": "npm run tsc && np --otp",
+    "dev:publish": "./scripts/dev-publish.sh",
+    "version": "npm run tsc && jekyll build",
+    "prepare": "husky install"
+  },
+  "jest": {
+    "roots": [
+      "src",
+      "tests"
+    ],
+    "collectCoverageFrom": [
+      "./src/**/*.{ts,tsx}"
+    ],
+    "setupFilesAfterEnv": [
+      "./tests/setupTests.ts"
+    ],
+    "coverageThreshold": {
+      "global": {
+        "branches": 100,
+        "functions": 100,
+        "lines": 100,
+        "statements": 100
+      }
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js"
+    ],
+    "transform": {
+      "\\.tsx?$": "ts-jest"
+    },
+    "restoreMocks": true,
+    "watchPlugins": [
+      "jest-watch-typeahead/filename",
+      "jest-watch-typeahead/testname"
+    ],
+    "testEnvironment": "jsdom"
+  },
+  "lint-staged": {
+    "{src,tests}/**/*.{js,jsx,json,scss,ts,tsx}": [
+      "prettier --single-quote --trailingComma none --write"
+    ]
+  }
+}

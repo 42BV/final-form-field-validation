@@ -1,0 +1,10 @@
+remote_theme: 42bv/fortytwo
+title: '@42.nl/final-form-field-validation'
+description: 'Validating forms with react-final-form'
+baseurl: /final-form-field-validation/
+plugins:
+  - jekyll-remote-theme
+links:
+  - name: 'View on Github'
+    icon: 'https://unpkg.com/simple-icons@latest/icons/github.svg'
+    href: 'https://github.com/42BV/final-form-field-validation'
