@@ -106,7 +106,7 @@
   },
   "lint-staged": {
     "{src,tests}/**/*.{js,jsx,json,scss,ts,tsx}": [
-      "prettier --single-quote --trailingComma none --write"
+      "prettier --write"
     ]
   }
 }

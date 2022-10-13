@@ -51,7 +51,7 @@ export function Field<FieldValue, T extends HTMLElement>(
     ...fieldProps
   } = props;
 
-  const [timeout, storeTimeout] = useState<NodeJS.Timeout>();
+  const [resetTimeout, storeResetTimeout] = useState<() => void>();
 
   const validate = (
     value: FieldValue,
@@ -60,9 +60,8 @@ export function Field<FieldValue, T extends HTMLElement>(
     meta?: FieldState<FieldValue>
   ) =>
     new Promise(async (resolve) => {
-      if (timeout) {
-        clearTimeout(timeout);
-        storeTimeout(undefined);
+      if (resetTimeout) {
+        resetTimeout();
       }
 
       const validatorFunctions =
@@ -108,7 +107,12 @@ export function Field<FieldValue, T extends HTMLElement>(
         resolve(asyncErrors.length === 0 ? undefined : asyncErrors);
       }
 
-      storeTimeout(setTimeout(asyncValidation, asyncValidatorsDebounce));
+      const timeout = setTimeout(asyncValidation, asyncValidatorsDebounce);
+      const clearTimeoutCallback = () => {
+        clearTimeout(timeout);
+        resolve(undefined);
+      };
+      storeResetTimeout(() => clearTimeoutCallback);
     });
 
   return <FFField {...fieldProps} validate={validate} />;
