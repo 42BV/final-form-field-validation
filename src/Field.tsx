@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useRef } from 'react';
 import { FieldState, FieldValidator } from 'final-form';
 import {
   Field as FFField,
@@ -51,18 +51,17 @@ export function Field<FieldValue, T extends HTMLElement>(
     ...fieldProps
   } = props;
 
-  const [resetTimeout, storeResetTimeout] = useState<() => void>();
+  const debounceResolver = useRef<(value: boolean) => void>(() => undefined);
 
-  const validate = (
-    value: FieldValue,
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    allValues?: object,
-    meta?: FieldState<FieldValue>
-  ) =>
-    new Promise(async (resolve) => {
-      if (resetTimeout) {
-        resetTimeout();
-      }
+  const validate = useCallback(
+    async (
+      value: FieldValue,
+      // eslint-disable-next-line @typescript-eslint/ban-types
+      allValues?: object,
+      meta?: FieldState<FieldValue>
+    ) => {
+      // Prevent the previous async check from occurring if possible
+      debounceResolver.current(false);
 
       const validatorFunctions =
         Array.isArray(validators) && validators ? [...validators] : [];
@@ -77,10 +76,9 @@ export function Field<FieldValue, T extends HTMLElement>(
 
         const errors = results.filter((v) => v !== undefined);
 
-        // If there are no synchronous errors, perform the asynchronous validation
+        // If there are no synchronous errors, asynchronous validation will be prepared
         if (errors.length > 0) {
-          resolve(errors);
-          return;
+          return errors;
         }
       }
 
@@ -90,30 +88,36 @@ export function Field<FieldValue, T extends HTMLElement>(
           : [];
 
       if (asyncValidatorFunctions.length === 0) {
-        resolve(undefined);
-        return;
+        return undefined;
       }
 
-      async function asyncValidation() {
-        const asyncResults = await Promise.all(
-          asyncValidatorFunctions.map((validator) =>
-            validator(value, allValues, meta)
-          )
-        );
+      const promise = new Promise((resolve) => {
+        // Prevent the previous async check from occurring if possible
+        debounceResolver.current(false);
+        debounceResolver.current = resolve;
 
-        // If there are no errors, return undefined to indicate that everything is a-ok.
-        const asyncErrors = asyncResults.filter((v) => v !== undefined);
+        setTimeout(() => resolve(true), asyncValidatorsDebounce);
+      });
 
-        resolve(asyncErrors.length === 0 ? undefined : asyncErrors);
+      const shouldPerformAsyncValidation = await promise;
+
+      if (!shouldPerformAsyncValidation) {
+        return undefined;
       }
 
-      const timeout = setTimeout(asyncValidation, asyncValidatorsDebounce);
-      const clearTimeoutCallback = () => {
-        clearTimeout(timeout);
-        resolve(undefined);
-      };
-      storeResetTimeout(() => clearTimeoutCallback);
-    });
+      const asyncResults = await Promise.all(
+        asyncValidatorFunctions.map((validator) =>
+          validator(value, allValues, meta)
+        )
+      );
+
+      const asyncErrors = asyncResults.filter((v) => v !== undefined);
+
+      // If there are no errors, return undefined to indicate that everything is a-ok.
+      return asyncErrors.length === 0 ? undefined : asyncErrors;
+    },
+    [validators, asyncValidators, asyncValidatorsDebounce]
+  );
 
   return <FFField {...fieldProps} validate={validate} />;
 }

@@ -232,7 +232,7 @@ describe('Component: Field', () => {
       await expect(promise).resolves.toBeUndefined();
 
       await waitFor(() => {
-        expect(renderSpy).toHaveBeenCalledTimes(6);
+        expect(renderSpy).toHaveBeenCalledTimes(5);
       });
 
       expect(screen.getByTestId('errors').innerText).toBeUndefined();
