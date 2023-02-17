@@ -56,8 +56,7 @@ export function Field<FieldValue, T extends HTMLElement>(
   const validate = useCallback(
     async (
       value: FieldValue,
-      // eslint-disable-next-line @typescript-eslint/ban-types
-      allValues?: object,
+      allValues: object,
       meta?: FieldState<FieldValue>
     ) => {
       // Prevent the previous async check from occurring if possible
