@@ -1,14 +1,9 @@
-import React, { useCallback, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { FieldState, FieldValidator } from 'final-form';
-import {
-  Field as FFField,
-  FieldProps,
-  FieldRenderProps
-} from 'react-final-form';
+import { Field as FFField, FieldProps } from 'react-final-form';
 
 export type Props<FieldValue, T extends HTMLElement> = FieldProps<
   FieldValue,
-  FieldRenderProps<FieldValue>,
   T
 > & {
   /**
