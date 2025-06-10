@@ -1,20 +1,21 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": ["dom", "es6", "es2015.promise"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "commonjs",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "noEmit": true,
-    "jsx": "react-jsx"
+    "declaration": true,
+    "jsx": "react-jsx",
+    "outDir": "./lib"
   },
   "files": ["src/index.ts"],
   "exclude": ["node_modules"]
