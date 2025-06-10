@@ -1,6 +1,6 @@
 {
   "name": "@42.nl/final-form-field-validation",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Validating final forms.",
   "files": [
     "lib"
