@@ -4,42 +4,31 @@ on: [push]
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [14.x, 16.x, 18.x]
+        node-version: [20, 22, 24]
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: ${{ matrix.node-version }}
-    - uses: actions/cache@v3
-      with:
-        path: ~/.npm
-        key: ${{ runner.os }}-${{ matrix.node-version }}-node-${{ hashFiles('**/package-lock.json') }}
-        restore-keys: |
-          ${{ runner.os }}-node-
+        cache: npm
     - name: Setup timezone
-      uses: zcong1993/setup-timezone@v1.1.0
-      with:
-        timezone: Europe/Amsterdam
-    - run: npm install
+      run: sudo timedatectl set-timezone Europe/Amsterdam
+    - run: npm ci
     - run: npm run lint
     - run: npm run test:ts
     - run: npm run test:coverage
     - run: npm run tsc
-      env:
-        CI: true
     - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v3
+      if: matrix.node-version == 22
+      uses: codecov/codecov-action@v5
       with:
+        token: ${{ secrets.CODECOV_TOKEN }}
         directory: ./coverage
         flags: unittests
-        name: codecov-umbrella
         fail_ci_if_error: true
-        path_to_write_report: ./coverage/codecov_report.txt
-        verbose: true
