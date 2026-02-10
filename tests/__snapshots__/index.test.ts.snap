@@ -1,7 +1,8 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`index barrel: index-barrel 1`] = `
+exports[`index barrel > index-barrel 1`] = `
 {
   "Field": [Function],
+  "FieldProps": undefined,
 }
 `;

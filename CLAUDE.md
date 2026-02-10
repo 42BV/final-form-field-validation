@@ -10,7 +10,7 @@ A React library (`@42.nl/final-form-field-validation`) that wraps `react-final-f
 
 - **Run all checks:** `npm test` (lint + typecheck + tests with coverage)
 - **Run tests only:** `npm run test:coverage`
-- **Watch mode:** `npm start` (jest --watch --coverage)
+- **Watch mode:** `npm start` (vitest --coverage, watch is default)
 - **Lint:** `npm run lint`
 - **Typecheck:** `npm run test:ts`
 - **Build:** `npm run tsc` (outputs to `lib/`)
@@ -26,13 +26,13 @@ The library exports one component: `Field<FieldValue, T>` which extends `react-f
 ## Testing
 
 - Tests live in `tests/` (not co-located with source)
-- Uses Jest with jsdom, React Testing Library
+- Uses Vitest with jsdom, React Testing Library
 - **100% coverage thresholds** on branches, functions, lines, and statements — all new code must be fully covered
 - `tests/setupTests.ts` runs `clearAllMocks`/`resetAllMocks` before each test
-- Async validation tests use `jest.useFakeTimers()` and manual timer advancement
+- Async validation tests use `vi.useFakeTimers()` and manual timer advancement
 
 ## Code Style
 
-- ESLint flat config with typescript-eslint, react, jest, and prettier plugins
+- ESLint flat config with typescript-eslint, react, vitest, and prettier plugins
 - Prettier runs on commit via husky + lint-staged
 - Zero ESLint warnings allowed (`--max-warnings=0`)

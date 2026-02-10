@@ -29,7 +29,7 @@ function resolvablePromise<R>() {
 const makeIsNumber8Validator = () => {
   const { promise, resolve } = resolvablePromise<string | undefined>();
 
-  const validator: FieldValidator<string> = jest
+  const validator: FieldValidator<string> = vi
     .fn()
     .mockImplementation((value) => {
       resolve(parseInt(value) === 8 ? undefined : 'Value is not 8');
@@ -41,17 +41,17 @@ const makeIsNumber8Validator = () => {
 
 describe('Component: Field', () => {
   beforeEach(() => {
-    jest.useFakeTimers();
+    vi.useFakeTimers({ shouldAdvanceTime: true });
   });
 
   afterEach(() => {
-    jest.runAllTimers();
-    jest.useRealTimers();
+    vi.runAllTimers();
+    vi.useRealTimers();
   });
 
   describe('validators', () => {
     function setup({ validators }: { validators?: FieldValidator<string>[] }) {
-      const renderSpy = jest
+      const renderSpy = vi
         .fn()
         .mockImplementation(({ input, meta: { error } }) => (
           <div>
@@ -61,7 +61,7 @@ describe('Component: Field', () => {
         ));
 
       render(
-        <Form onSubmit={jest.fn()}>
+        <Form onSubmit={vi.fn()}>
           {() => (
             <Field name="Name" validators={validators} render={renderSpy} />
           )}
@@ -159,7 +159,7 @@ describe('Component: Field', () => {
       asyncValidatorsDebounce?: number;
     }) {
       const { promise, validator } = makeIsNumber8Validator();
-      const renderSpy = jest
+      const renderSpy = vi
         .fn()
         .mockImplementation(({ input, meta: { error } }) => (
           <div>
@@ -169,7 +169,7 @@ describe('Component: Field', () => {
         ));
 
       render(
-        <Form onSubmit={jest.fn()}>
+        <Form onSubmit={vi.fn()}>
           {() => (
             <Field
               name="Name"
@@ -193,7 +193,7 @@ describe('Component: Field', () => {
 
       fireEvent.change(screen.getByRole('textbox'), { target: { value: 2 } });
 
-      jest.runAllTimers();
+      vi.runAllTimers();
 
       await screen.findByText('Value is not 8');
 
@@ -206,12 +206,12 @@ describe('Component: Field', () => {
     });
 
     it('should return undefined when both async and sync validation have no errors', async () => {
-      expect.assertions(10);
+      expect.hasAssertions();
 
       const { renderSpy, promise, validator } = setup({
         validators: [isEven]
       });
-      await waitFor(() => expect(jest.getTimerCount()).toBe(2));
+      await waitFor(() => expect(vi.getTimerCount()).toBe(2));
 
       await screen.findByText('Not even');
 
@@ -219,8 +219,8 @@ describe('Component: Field', () => {
         fireEvent.change(screen.getByRole('textbox'), { target: { value: 8 } });
       });
 
-      await waitFor(() => expect(jest.getTimerCount()).toBe(3));
-      jest.advanceTimersByTime(201);
+      await waitFor(() => expect(vi.getTimerCount()).toBe(3));
+      vi.advanceTimersByTime(201);
 
       await waitFor(() => expect(validator).toHaveBeenCalledTimes(1));
       expect(validator).toHaveBeenCalledWith(
@@ -239,12 +239,12 @@ describe('Component: Field', () => {
     });
 
     it('should debounce with 200 milliseconds by default', async () => {
-      expect.assertions(4);
+      expect.hasAssertions();
 
-      const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+      const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
 
       setup({});
-      await waitFor(() => expect(jest.getTimerCount()).toBe(2));
+      await waitFor(() => expect(vi.getTimerCount()).toBe(2));
 
       await act(() => {
         fireEvent.change(screen.getByRole('textbox'), {
@@ -252,8 +252,8 @@ describe('Component: Field', () => {
         });
       });
 
-      await waitFor(() => expect(jest.getTimerCount()).toBe(3));
-      jest.runAllTimers();
+      await waitFor(() => expect(vi.getTimerCount()).toBe(3));
+      vi.runAllTimers();
 
       await screen.findByText('Value is not 8');
 
@@ -262,12 +262,12 @@ describe('Component: Field', () => {
     });
 
     it('should accept a custom debounce', async () => {
-      expect.assertions(4);
+      expect.hasAssertions();
 
-      const setTimeoutSpy = jest.spyOn(global, 'setTimeout');
+      const setTimeoutSpy = vi.spyOn(global, 'setTimeout');
 
       setup({ asyncValidatorsDebounce: 300 });
-      await waitFor(() => expect(jest.getTimerCount()).toBe(2));
+      await waitFor(() => expect(vi.getTimerCount()).toBe(2));
 
       await act(() => {
         fireEvent.change(screen.getByRole('textbox'), {
@@ -275,8 +275,8 @@ describe('Component: Field', () => {
         });
       });
 
-      await waitFor(() => expect(jest.getTimerCount()).toBe(3));
-      jest.runAllTimers();
+      await waitFor(() => expect(vi.getTimerCount()).toBe(3));
+      vi.runAllTimers();
 
       await screen.findByText('Value is not 8');
 
@@ -287,19 +287,19 @@ describe('Component: Field', () => {
     it('should when two async validations happen after each other cancel the first one', async () => {
       expect.assertions(1);
 
-      const clearTimeoutSpy = jest.spyOn(global, 'clearTimeout');
+      const clearTimeoutSpy = vi.spyOn(global, 'clearTimeout');
 
       setup({ validators: [isEven] });
 
-      jest.runAllTimers();
+      vi.runAllTimers();
 
       fireEvent.change(screen.getByRole('textbox'), { target: { value: 4 } });
 
-      jest.advanceTimersByTime(100);
+      vi.advanceTimersByTime(100);
 
       fireEvent.change(screen.getByRole('textbox'), { target: { value: 42 } });
 
-      jest.runAllTimers();
+      vi.runAllTimers();
 
       await screen.findByText('Value is not 8');
 
